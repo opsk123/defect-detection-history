@@ -1,0 +1,16 @@
+.venv/
+.venv_old/
+__pycache__/
+*.pyc
+defect_dataset/
+defect_dataset.zip
+runs/
+weights/
+train_log.txt
+app_log.txt
+app_backup.py
+car_control.py/
+*.bat
+!publish_history.bat
+yolo26n.pt
+models/*.pt
