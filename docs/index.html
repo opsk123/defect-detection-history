@@ -53,6 +53,10 @@
   <div class="bar" id="filters" role="group" aria-label="클래스 필터"></div>
   <section class="grid" id="grid"></section>
 
+  <h2>검사 이력 표</h2>
+  <p class="meta">‘가상’ 표시는 화면 구성을 보여 주기 위한 <b>가상(샘플) 데이터</b>이며 실제 검사 결과가 아닙니다. 실제 탐지 이력은 표시 없이 함께 나타납니다.</p>
+  <div class="scroll"><table id="hist"></table></div>
+
   <h2>모델 성능 (평가 데이터)</h2>
   <div class="scroll"><table id="metrics"></table></div>
 </main>
@@ -102,11 +106,32 @@ function renderGrid() {
   $("grid").querySelectorAll("img").forEach(i => i.onclick = () => { $("dlgimg").src = i.dataset.src; $("dlg").showModal(); });
 }
 
+let samples = [];
+function renderTable() {
+  const rows = [...history, ...samples].sort((a, b) => b.time.localeCompare(a.time));
+  const head = ["번호", "검사 시각", "입력", "모델", "임계값", "판정", "결함 수", "검출 내역 (최고 신뢰도)", "추론(ms)"];
+  const body = rows.map((h, i) => {
+    const n = h.detections.length;
+    const by = {}; h.detections.forEach(d => by[d.class] = Math.max(by[d.class] || 0, d.conf));
+    const detail = n ? Object.entries(by).map(([c, v]) => `<span class="tag ${esc(c)}">${esc(c)} ${v.toFixed(2)}</span>`).join(" ") : "-";
+    const badge = h.virtual ? ` <span class="tag none">가상</span>` : "";
+    const verdict = n ? `<b style="color:var(--fracture)">불량</b>` : `<b style="color:#16a34a">양품</b>`;
+    return `<tr><td>${rows.length - i}${badge}</td><td>${esc(h.time.replace("T", " "))}</td><td>${esc(h.source)}</td>
+      <td>${esc(h.model)}</td><td>${h.conf}</td><td>${verdict}</td><td>${n}</td><td>${detail}</td><td>${h.inference_ms}</td></tr>`;
+  }).join("");
+  $("hist").innerHTML = `<thead><tr>${head.map(c => `<th>${c}</th>`).join("")}</tr></thead><tbody>${body}</tbody>`;
+}
+
 async function load() {
   try {
     const r = await fetch("data/history.json", { cache: "no-cache" });
     history = r.ok ? await r.json() : [];
   } catch { history = []; }
+  try {
+    const s = await fetch("data/sample_history.json", { cache: "no-cache" });
+    samples = s.ok ? await s.json() : [];
+  } catch { samples = []; }
+  renderTable();
   if (history.length) $("updated").textContent = "· 최근 " + history[0].time.replace("T", " ");
   renderStats(); renderFilters(); renderGrid();
   try {

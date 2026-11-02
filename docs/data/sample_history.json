@@ -1,0 +1,241 @@
+[
+ {
+  "id": "SAMPLE-012",
+  "virtual": true,
+  "time": "2026-10-22T15:37:11",
+  "model": "best",
+  "conf": 0.25,
+  "source": "ESP32 카메라",
+  "inference_ms": 25.1,
+  "detections": []
+ },
+ {
+  "id": "SAMPLE-011",
+  "virtual": true,
+  "time": "2026-10-22T13:35:17",
+  "model": "best",
+  "conf": 0.25,
+  "source": "업로드",
+  "inference_ms": 23.5,
+  "detections": [
+   {
+    "class": "fracture",
+    "conf": 0.961,
+    "box": [
+     301,
+     162,
+     411,
+     230
+    ]
+   },
+   {
+    "class": "splitting",
+    "conf": 0.418,
+    "box": [
+     214,
+     138,
+     253,
+     163
+    ]
+   }
+  ]
+ },
+ {
+  "id": "SAMPLE-010",
+  "virtual": true,
+  "time": "2026-10-22T11:39:07",
+  "model": "best",
+  "conf": 0.25,
+  "source": "업로드",
+  "inference_ms": 22.4,
+  "detections": [
+   {
+    "class": "sawing",
+    "conf": 0.567,
+    "box": [
+     167,
+     86,
+     281,
+     132
+    ]
+   }
+  ]
+ },
+ {
+  "id": "SAMPLE-009",
+  "virtual": true,
+  "time": "2026-10-22T09:19:41",
+  "model": "best",
+  "conf": 0.25,
+  "source": "ESP32 카메라",
+  "inference_ms": 19.4,
+  "detections": [
+   {
+    "class": "splitting",
+    "conf": 0.894,
+    "box": [
+     248,
+     165,
+     359,
+     229
+    ]
+   }
+  ]
+ },
+ {
+  "id": "SAMPLE-008",
+  "virtual": true,
+  "time": "2026-10-21T15:42:04",
+  "model": "last",
+  "conf": 0.25,
+  "source": "업로드",
+  "inference_ms": 31.4,
+  "detections": [
+   {
+    "class": "splitting",
+    "conf": 0.698,
+    "box": [
+     180,
+     194,
+     288,
+     253
+    ]
+   },
+   {
+    "class": "splitting",
+    "conf": 0.618,
+    "box": [
+     253,
+     55,
+     284,
+     104
+    ]
+   }
+  ]
+ },
+ {
+  "id": "SAMPLE-007",
+  "virtual": true,
+  "time": "2026-10-21T13:46:28",
+  "model": "best",
+  "conf": 0.4,
+  "source": "ESP32 카메라",
+  "inference_ms": 9.3,
+  "detections": [
+   {
+    "class": "sawing",
+    "conf": 0.807,
+    "box": [
+     80,
+     282,
+     153,
+     318
+    ]
+   }
+  ]
+ },
+ {
+  "id": "SAMPLE-006",
+  "virtual": true,
+  "time": "2026-10-21T11:44:49",
+  "model": "last",
+  "conf": 0.3,
+  "source": "ESP32 카메라",
+  "inference_ms": 36.0,
+  "detections": []
+ },
+ {
+  "id": "SAMPLE-005",
+  "virtual": true,
+  "time": "2026-10-21T09:39:13",
+  "model": "best",
+  "conf": 0.3,
+  "source": "업로드",
+  "inference_ms": 33.4,
+  "detections": [
+   {
+    "class": "splitting",
+    "conf": 0.919,
+    "box": [
+     238,
+     180,
+     317,
+     269
+    ]
+   }
+  ]
+ },
+ {
+  "id": "SAMPLE-004",
+  "virtual": true,
+  "time": "2026-10-20T15:07:36",
+  "model": "best",
+  "conf": 0.25,
+  "source": "업로드",
+  "inference_ms": 26.1,
+  "detections": [
+   {
+    "class": "splitting",
+    "conf": 0.728,
+    "box": [
+     112,
+     72,
+     206,
+     160
+    ]
+   }
+  ]
+ },
+ {
+  "id": "SAMPLE-003",
+  "virtual": true,
+  "time": "2026-10-20T13:07:14",
+  "model": "best",
+  "conf": 0.3,
+  "source": "ESP32 카메라",
+  "inference_ms": 12.6,
+  "detections": [
+   {
+    "class": "splitting",
+    "conf": 0.331,
+    "box": [
+     51,
+     223,
+     77,
+     266
+    ]
+   }
+  ]
+ },
+ {
+  "id": "SAMPLE-002",
+  "virtual": true,
+  "time": "2026-10-20T11:26:04",
+  "model": "last",
+  "conf": 0.4,
+  "source": "업로드",
+  "inference_ms": 34.5,
+  "detections": []
+ },
+ {
+  "id": "SAMPLE-001",
+  "virtual": true,
+  "time": "2026-10-20T09:20:09",
+  "model": "last",
+  "conf": 0.25,
+  "source": "업로드",
+  "inference_ms": 10.8,
+  "detections": [
+   {
+    "class": "sawing",
+    "conf": 0.69,
+    "box": [
+     57,
+     294,
+     89,
+     355
+    ]
+   }
+  ]
+ }
+]
