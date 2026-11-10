@@ -1,5 +1,7 @@
 # 결함 탐지 (YOLO26n) + 탐지 이력 사이트
 
+Google 로그인 전환은 준비 브랜치에서 구현했습니다. 운영 적용 전 설정과 계정 검증 절차는 [GOOGLE_LOGIN_SETUP.md](GOOGLE_LOGIN_SETUP.md)를 참조하세요. 아래 공용 비밀번호 설명은 기존 운영 방식입니다.
+
 ## GitHub 기반 누적 결과 웹 (2026-11-10)
 
 - 운영 주소: https://opsk123.github.io/defect-detection-history/
