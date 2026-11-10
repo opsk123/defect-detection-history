@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';
+import {filteredRows,csvCell,classCounts} from '../docs/dashboard-utils.mjs';
+const rows=[{mode:'inference',line:'A',status:'review_required',boxes:[{class_key:'sawing'},{class_key:'sawing'}]},{mode:'fixture',line:'A',boxes:[{class_key:'sawing'}]},{mode:'inference',line:'B',boxes:[]}];
+assert.equal(filteredRows(rows).length,2);
+assert.equal(filteredRows(rows,{line:'A'}).length,1);
+assert.equal(filteredRows(rows,{fixture:true}).length,3);
+assert.equal(classCounts(filteredRows(rows)).sawing,1);
+assert.equal(csvCell('=SUM(A1)'), '"\'=SUM(A1)"');
+assert.equal(csvCell('a"b'), '"a""b"');
+console.log('PASS: filters, fixture separation, per-observation counts, CSV escaping');
