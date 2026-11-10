@@ -1,43 +1,30 @@
-# 결함 탐지 (YOLO26n) + 탐지 이력 사이트
+# ACCC 2단계 · 누적 검사 결과 웹앱
 
-## GitHub 기반 누적 결과 웹 (2026-11-10)
+최종 운영 주소: https://opsk123.github.io/defect-detection-history/
 
-- 운영 주소: https://opsk123.github.io/defect-detection-history/
-- 배포 원본: 이 저장소의 `main` 브랜치, `/docs` 폴더. 커밋을 푸시하면 GitHub Pages가 반영합니다.
-- 데이터: PC 검사 프로그램이 Supabase에 누적한 `accc_dashboard` 관측 기록을 조회합니다. 노트북의 임시 터널이나 ChatGPT Sites에 의존하지 않습니다.
-- 접속: 기존 Streamlit 조회 비밀번호를 사용합니다. 비밀번호는 브라우저 메모리에만 유지하고 로그아웃 시 결과와 함께 지웁니다.
-- 기능: 기간·라인·판정 필터, 모의/미실행 구분, 판정/결함 집계, 상세 결과, CSV 다운로드, 선택적 30초 갱신. 기간당 최대 20,000건이며 초과 시 기간을 좁힙니다.
-- 집계: 검사 기록 한 줄은 run_id 기준 세션 하나입니다. `검사 세션`과 하단 `검사 기록 · 총 N건`은 같습니다. 정상 일치도 사진 수가 아닌 세션 수이며, 조회 기간 내 해당 세션의 모든 사진이 normal_candidate일 때만 정상 세션으로 셉니다. 하나라도 불일치하면 재검토, 나머지 오류·미실행이 있으면 별도 상태입니다. 판정 필터는 세션으로 집계한 다음 적용합니다. 사진별 원본 결과는 상세 보기와 세션 사진별 CSV로 보존합니다.
-- 기존 정적 이력은 `docs/legacy-history.html`에 보존했습니다. 기존 이미지와 JSON 데이터는 이동·삭제하지 않았습니다.
-- MVP 시연: `DEMO-SESSIONS-200` 라인의 가상 세션 200건(정상 일치 160, 불일치 40)을 추가했습니다. 기본 화면은 가상 데이터를 포함하며 실제/가상 세션 수를 명시합니다. `가상·시연 데이터 포함`을 끄면 실제 기록만 표시합니다. 모든 가상 이벤트는 fixture이며 실제 모델 성능 집계에서 제외됩니다. 기존 `DEMO-ONLY-100`의 100개 사진은 1개 가상 세션으로 유지됩니다.
-- 현재 기본 시연 화면은 `DEMO-MVP-200` 프로필입니다: 정상 모델 일치 196세션, 재검토 2세션, 미실행 1세션, 오류 1세션(총 200). 모델 출력까지 이 분포에 맞춰 생성한 가상 데이터이며 실제 검사 결과를 변경한 것이 아닙니다. 가상 데이터 체크를 끄면 실제 라인 전체로 전환합니다. 이전 시연 배치는 라인 필터로 계속 확인할 수 있습니다.
+기존 저장소 `opsk123/defect-detection-history`의 main 브랜치 `/docs`를 GitHub Pages로 배포합니다. 최종 2단계는 이 웹앱 하나이며 로컬 Streamlit과 이전 ChatGPT Sites는 최종 운영 대상이 아닙니다.
 
-`docs/config.js`에는 공개 가능한 Supabase publishable 키만 들어 있습니다. 데이터 조회는 비밀번호를 검증하는 제한된 읽기 전용 RPC를 통합니다. 원본 테이블과 비밀번호 해시 테이블은 익명 사용자의 직접 접근을 차단합니다. 서버/서비스 역할 키와 실제 조회 비밀번호는 저장소에 넣지 않습니다. `supabase/003_pages_dashboard.sql`은 서버 관리자용 설정 템플릿이며 비밀번호 원문을 받지 않습니다.
+## 확정 구성
 
-이 배포는 누적 결과 조회 웹의 이전입니다. 기존 ChatGPT Sites의 사용자별 역할·검토 수정·D1/R2 공유 이미지 저장소와 브라우저 모델 추론은 이 조회 화면에 이식되지 않았으며 기존 사이트에 남아 있습니다. 기존 Sites 데이터 자체를 Supabase로 복제한 것은 아닙니다. PC에서 이미 Supabase로 전송한 결과를 표시합니다. Python Streamlit 앱은 별도로 유지합니다. GitHub Pages는 Python 서버를 실행하지 않으므로 새 화면은 HTML/JavaScript로 구현했습니다.
+- 1단계 로컬 검사 프로그램 → Supabase 누적 이벤트 저장 → 2단계 웹 조회.
+- Supabase 프로젝트: `ygnynrpcismszflhysqr` (analog-flow-guard).
+- Google OAuth / PKCE 로그인. 비로그인 사용자는 누적 기록을 조회할 수 없습니다.
+- Google 로그인 사용자는 조회 전용입니다. 저장소 소유자 opsk123가 확인한 Google 계정 하나만 서버 UUID로 관리자 지정합니다. 첫 가입자에게 권한을 자동 부여하지 않습니다.
+- 관리자는 검토 메모를 수정하며 감사 이력을 남깁니다. 모델 원본 판정은 변경하지 않습니다.
+- 기간·라인·판정 필터, 세션 집계, 상세, CSV, 자동 새로고침을 제공합니다. 최신 30일이 기본 조회 기간이며 이전 누적 데이터는 시작일을 변경해서 확인합니다. 조회 제한 20,000건은 화면의 일회 조회 한도이며 저장 보존 한도가 아닙니다.
+- `검사 세션`과 `검사 기록`은 동일한 run_id 단위로 집계합니다. 가상 시연 데이터는 fixture로 구분하며 실제 검사와 구별합니다.
+- 원본 이미지는 1단계 PC에 보관합니다. Supabase에는 판정·점수·좌표·메타데이터가 누적됩니다. 이미지 파일을 클라우드에 업로드하는 기능은 포함하지 않습니다.
 
-검증: `node tests/dashboard.test.mjs`. GitHub Pages 배포 후 비밀번호 로그인, CSV 다운로드, 결과 상세, 모의 데이터 필터와 로그아웃을 확인합니다.
+## 배포 및 보안
 
-### 모델 일치 판정 (dual-agreement-2.0)
+Google 제공자 활성화와 데이터베이스 005 마이그레이션을 사용합니다. 운영 전환 후 006으로 기존 공용 비밀번호 RPC를 차단합니다. 관리자 지정과 구체적인 설정은 [GOOGLE_LOGIN_SETUP.md](GOOGLE_LOGIN_SETUP.md)를 참조하세요.
 
-두 모델 정상(ResNet normal, YOLO 검출 없음)이거나, ResNet 결함 종류와 YOLO가 반환한 결함 종류가 정확히 하나로 일치하면 `정상 · 모델 일치`로 표시합니다. 여기서 정상은 무결함 보장이 아니라 모델 간 일치 상태입니다. 결함 종류·박스·점수는 유지합니다. 서로 다른 결함, 여러 결함 종류, 한쪽만 결함 검출은 재검토입니다. 모델 오류와 미실행은 별도 상태이며 정상으로 바꾸지 않습니다. 낮은 점수와 품질 경고만으로 재검토로 전환하지 않습니다. 비교에는 YOLO가 실제 반환한 모든 박스가 포함됩니다.
+`docs/config.js`의 publishable 키는 공개용입니다. Google Client Secret, service_role 키, 관리자 자격 증명은 Git에 저장하지 않습니다. 역할 검사는 서버 RPC에서 수행합니다. 기존 정적 legacy 파일은 보존되어 있으므로 이미 공개된 과거 이미지/JSON에는 이 로그인 정책이 소급 적용되지 않습니다. 최종 화면에서는 legacy 링크를 제거했습니다.
 
-`supabase/004_agreement_policy.sql`은 불변 원본 이벤트를 삭제하거나 수정하지 않고 공유 조회 뷰에 새 판정을 적용합니다. 이전 판정은 original_status/original_reason_codes와 원본 이벤트에서 확인할 수 있습니다. 가상 DEMO-ONLY-100은 두 모델 정상 일치 80건, ResNet 정상과 YOLO 결함 불일치 20건이며 모의 표시를 유지합니다.
+## 검증
 
-## 기존 로컬 검출 앱과 파일 이력
+`node tests/dashboard.test.mjs` — 세션 집계·CSV.
 
-sawing / fracture / splitting 결함을 YOLO26n 으로 검출하는 Gradio 앱과, 검출 이력을 보여 주는 GitHub Pages 사이트.
+`node tests/auth-permissions.cjs` — @electric-sql/pglite 설치 후 SQL 권한 검증.
 
-## 앱 실행
-```
-pip install ultralytics gradio opencv-python pillow torch
-python app.py        # http://127.0.0.1:7860
-```
-검출할 때마다 `docs/data/history.json` 과 썸네일(`docs/data/img/`)에 이력이 최대 100건 저장됩니다.
-실시간 검출(0.5초 주기)로 이력이 넘치는 것을 막으려면 `LOG_HISTORY=0` 환경변수로 끌 수 있습니다.
-
-## 이력 사이트
-`docs/index.html` 은 정적 페이지입니다(클래스 필터, 통계, 이미지 확대, 모델 성능표).
-`publish_history.bat`(또는 `git add docs && git commit && git push`)로 이력을 올리면 Pages 가 갱신됩니다.
-
-> 주의: 저장소가 공개이므로 이력 이미지도 공개됩니다. 올리면 안 되는 이미지는 `docs/data/img/` 에서 지운 뒤 푸시하세요.
+Google 실제 사용자 로그인의 최종 성공 여부와 관리자 매핑 상태는 최종 운영 정리 파일을 확인하세요.
