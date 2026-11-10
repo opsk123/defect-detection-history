@@ -1,6 +1,6 @@
 import {labels,sessionRows,csvCell,classCounts} from './dashboard-utils.mjs';
 const $=id=>document.getElementById(id),cfg=window.ACCC_CONFIG;
-let password='',records=[],page=0,busy=false,generation=0,controller=null,limited=false;
+let password='',records=[],page=0,busy=false,generation=0,controller=null,limited=false,initialView=true;
 const pageSize=100;
 const dateString=date=>new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).format(date);
 $('to').value=dateString(new Date());$('from').value=dateString(new Date(Date.now()-30*864e5));
@@ -39,15 +39,16 @@ async function refresh(){
   }
   if(version!==generation)return;
   records=fetched;limited=more;page=0;
-  const current=$('line').value;$('line').replaceChildren(new Option('전체',''),...([...new Set(records.map(r=>r.line))].sort().map(l=>new Option(l,l))));if([...$('line').options].some(o=>o.value===current))$('line').value=current;
+  const current=$('line').value;$('line').replaceChildren(new Option('전체',''),...([...new Set(records.map(r=>r.line))].sort().map(l=>new Option(l,l))));if([...$('line').options].some(o=>o.value===current))$('line').value=current;if(initialView&&$('fixture').checked&&records.some(r=>r.line==='DEMO-MVP-200'))$('line').value='DEMO-MVP-200';initialView=false;
   $('login').hidden=true;$('dashboard').hidden=false;$('logout').hidden=false;$('password').value='';render();
  }catch(error){if(error.name!=='AbortError'&&version===generation){$('loginError').textContent=error.message;$('message').textContent='갱신 실패 · 기존 표시 결과는 이전 조회 기준입니다. '+error.message;}}
  finally{if(version===generation){busy=false;$('refresh').disabled=false;$('loginButton').disabled=false;}}
 }
 $('loginForm').onsubmit=e=>{e.preventDefault();password=$('password').value;refresh();};$('refresh').onclick=refresh;
-for(const id of ['fixture','line','status'])$(id).onchange=()=>{page=0;render();};
+for(const id of ['line','status'])$(id).onchange=()=>{page=0;render();};
+$('fixture').onchange=()=>{page=0;if($('fixture').checked&&records.some(r=>r.line==='DEMO-MVP-200'))$('line').value='DEMO-MVP-200';else if(!$('fixture').checked&&$('line').value&&!records.some(r=>r.line===$('line').value&&r.mode==='inference'))$('line').value='';render();};
 $('previous').onclick=()=>{page--;render();};$('next').onclick=()=>{page++;render();};$('closeDetails').onclick=()=>$('details').close();
-$('logout').onclick=()=>{generation++;controller?.abort();busy=false;password='';records=[];$('password').value='';$('dashboard').hidden=true;$('login').hidden=false;$('logout').hidden=true;$('loginButton').disabled=false;$('refresh').disabled=false;$('auto').checked=false;$('details').close();$('detailCsv').onclick=null;for(const id of ['detailText','rows','metrics','statusChart','classChart','message','loginError'])$(id).replaceChildren();};
+$('logout').onclick=()=>{generation++;controller?.abort();busy=false;password='';records=[];initialView=true;$('fixture').checked=true;$('password').value='';$('dashboard').hidden=true;$('login').hidden=false;$('logout').hidden=true;$('loginButton').disabled=false;$('refresh').disabled=false;$('auto').checked=false;$('details').close();$('detailCsv').onclick=null;for(const id of ['detailText','rows','metrics','statusChart','classChart','message','loginError'])$(id).replaceChildren();};
 function downloadCsv(rows,isSession=true){const header=isSession?['검사 시각','라인','실행 구분','분류','판정','검출','세션 ID','사진 수']:['검사 시각','라인','실행 구분','분류','판정','검출','관측 ID'];const values=rows.map(r=>{const a=[r.time,r.line,r.mode,r.class,r.status,JSON.stringify(r.boxes),r.id];if(isSession)a.push(r.frame_count);return a;});const data='\ufeff'+[header,...values].map(row=>row.map(csvCell).join(',')).join('\r\n');const u=URL.createObjectURL(new Blob([data],{type:'text/csv;charset=utf-8'}));const a=document.createElement('a');a.href=u;a.download=isSession?'accc-sessions.csv':'accc-session-photos.csv';a.click();setTimeout(()=>URL.revokeObjectURL(u),1000);}
 $('csv').onclick=()=>downloadCsv(selected());
 setInterval(()=>{if(password&&!$('dashboard').hidden&&$('auto').checked&&!document.hidden)refresh();},30000);
