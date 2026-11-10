@@ -10,7 +10,7 @@ function textNode(tag,text){const n=document.createElement(tag);n.textContent=te
 function bars(id,counts,names={}){const box=$(id);box.replaceChildren();const max=Math.max(1,...Object.values(counts));for(const [name,count] of Object.entries(counts)){const row=document.createElement('div');row.className='bar';const meter=document.createElement('meter');meter.min=0;meter.max=max;meter.value=count;meter.setAttribute('aria-label',names[name]||name);row.append(textNode('span',names[name]||name),meter,textNode('span',count.toLocaleString()));box.append(row);}}
 function render(){
  const rows=selected(),counts=Object.fromEntries(Object.keys(labels).map(k=>[k,0]));for(const r of rows)if(r.status in counts)counts[r.status]++;
- $('metrics').replaceChildren();for(const [title,value] of [['관측 프레임',rows.length],['재검토 필요',counts.review_required],['정상 · 모델 일치',counts.normal_candidate],['검사 시행',new Set(rows.map(r=>r.run)).size]]){const n=document.createElement('div');n.className='metric';n.append(textNode('small',title),textNode('strong',value.toLocaleString()));$('metrics').append(n);}
+ $('metrics').replaceChildren();for(const [title,value] of [['검사 시행',rows.length],['재검토 필요',counts.review_required],['정상 · 모델 일치',counts.normal_candidate],['검사 세션',new Set(rows.map(r=>r.run)).size]]){const n=document.createElement('div');n.className='metric';n.append(textNode('small',title),textNode('strong',value.toLocaleString()));$('metrics').append(n);}
  bars('statusChart',counts,labels);bars('classChart',classCounts(rows));
  page=Math.max(0,Math.min(page,Math.ceil(rows.length/pageSize)-1));$('rows').replaceChildren();
  for(const r of [...rows].reverse().slice(page*pageSize,(page+1)*pageSize)){
@@ -18,7 +18,7 @@ function render(){
   for(const v of [new Date(r.time).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'}),r.line,r.mode==='inference'?'실제 추론':r.mode||'미실행',r.class||'—',boxes||'없음',labels[r.status]||r.status])tr.append(textNode('td',v));
   const cell=document.createElement('td'),button=textNode('button','보기');button.onclick=()=>{$('detailText').textContent=JSON.stringify(r,null,2);$('details').showModal();};cell.append(button);tr.append(cell);$('rows').append(tr);
  }
- $('empty').hidden=rows.length>0;$('page').textContent=`${page+1} / ${Math.max(1,Math.ceil(rows.length/pageSize))}`;$('previous').disabled=page===0;$('next').disabled=(page+1)*pageSize>=rows.length;
+ $('recordCount').textContent=`검사 기록 · 총 ${rows.length.toLocaleString()}건`;$('recordRange').textContent=rows.length?`${(page*pageSize+1).toLocaleString()}–${Math.min((page+1)*pageSize,rows.length).toLocaleString()}번째 기록 표시 · 페이지당 ${pageSize}건`:'표시할 기록이 없습니다.';$('empty').hidden=rows.length>0;$('page').textContent=`${page+1} / ${Math.max(1,Math.ceil(rows.length/pageSize))}`;$('previous').disabled=page===0;$('next').disabled=(page+1)*pageSize>=rows.length;
  const other=records.filter(r=>r.mode!=='inference').length;
  $('message').textContent=`조회 ${records.length.toLocaleString()}건 · 현재 표시 ${rows.length.toLocaleString()}건 · 모의·미실행 ${other.toLocaleString()}건${!$('fixture').checked?' 제외':''}${limited?' · 20,000건 제한: 기간을 좁혀 주세요.':''}`;
 }
