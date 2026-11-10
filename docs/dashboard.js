@@ -10,7 +10,7 @@ function textNode(tag,text){const n=document.createElement(tag);n.textContent=te
 function bars(id,counts,names={}){const box=$(id);box.replaceChildren();const max=Math.max(1,...Object.values(counts));for(const [name,count] of Object.entries(counts)){const row=document.createElement('div');row.className='bar';const meter=document.createElement('meter');meter.min=0;meter.max=max;meter.value=count;meter.setAttribute('aria-label',names[name]||name);row.append(textNode('span',names[name]||name),meter,textNode('span',count.toLocaleString()));box.append(row);}}
 function render(){
  const rows=selected(),counts=Object.fromEntries(Object.keys(labels).map(k=>[k,0]));for(const r of rows)if(r.status in counts)counts[r.status]++;
- $('metrics').replaceChildren();for(const [title,value] of [['관측 프레임',rows.length],['재검토 필요',counts.review_required],['손상 의심',counts.damage_suspected],['검사 시행',new Set(rows.map(r=>r.run)).size]]){const n=document.createElement('div');n.className='metric';n.append(textNode('small',title),textNode('strong',value.toLocaleString()));$('metrics').append(n);}
+ $('metrics').replaceChildren();for(const [title,value] of [['관측 프레임',rows.length],['재검토 필요',counts.review_required],['정상 · 모델 일치',counts.normal_candidate],['검사 시행',new Set(rows.map(r=>r.run)).size]]){const n=document.createElement('div');n.className='metric';n.append(textNode('small',title),textNode('strong',value.toLocaleString()));$('metrics').append(n);}
  bars('statusChart',counts,labels);bars('classChart',classCounts(rows));
  page=Math.max(0,Math.min(page,Math.ceil(rows.length/pageSize)-1));$('rows').replaceChildren();
  for(const r of [...rows].reverse().slice(page*pageSize,(page+1)*pageSize)){

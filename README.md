@@ -15,6 +15,12 @@
 
 검증: `node tests/dashboard.test.mjs`. GitHub Pages 배포 후 비밀번호 로그인, CSV 다운로드, 결과 상세, 모의 데이터 필터와 로그아웃을 확인합니다.
 
+### 모델 일치 판정 (dual-agreement-2.0)
+
+두 모델 정상(ResNet normal, YOLO 검출 없음)이거나, ResNet 결함 종류와 YOLO가 반환한 결함 종류가 정확히 하나로 일치하면 `정상 · 모델 일치`로 표시합니다. 여기서 정상은 무결함 보장이 아니라 모델 간 일치 상태입니다. 결함 종류·박스·점수는 유지합니다. 서로 다른 결함, 여러 결함 종류, 한쪽만 결함 검출은 재검토입니다. 모델 오류와 미실행은 별도 상태이며 정상으로 바꾸지 않습니다. 낮은 점수와 품질 경고만으로 재검토로 전환하지 않습니다. 비교에는 YOLO가 실제 반환한 모든 박스가 포함됩니다.
+
+`supabase/004_agreement_policy.sql`은 불변 원본 이벤트를 삭제하거나 수정하지 않고 공유 조회 뷰에 새 판정을 적용합니다. 이전 판정은 original_status/original_reason_codes와 원본 이벤트에서 확인할 수 있습니다. 가상 DEMO-ONLY-100은 두 모델 정상 일치 80건, ResNet 정상과 YOLO 결함 불일치 20건이며 모의 표시를 유지합니다.
+
 ## 기존 로컬 검출 앱과 파일 이력
 
 sawing / fracture / splitting 결함을 YOLO26n 으로 검출하는 Gradio 앱과, 검출 이력을 보여 주는 GitHub Pages 사이트.
