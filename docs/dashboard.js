@@ -15,10 +15,11 @@ function render(){
  page=Math.max(0,Math.min(page,Math.ceil(rows.length/pageSize)-1));$('rows').replaceChildren();
  for(const r of [...rows].reverse().slice(page*pageSize,(page+1)*pageSize)){
   const tr=document.createElement('tr');const boxes=(r.boxes||[]).map(b=>`${b.class_key} ${(b.score*100).toFixed(1)}%`).join(' · ');
-  for(const v of [new Date(r.time).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'}),r.line,r.mode==='inference'?'실제 추론':r.mode||'미실행',r.frame_count.toLocaleString()+'장',r.class||'—',boxes||'없음',labels[r.status]||r.status])tr.append(textNode('td',v));
+  for(const v of [new Date(r.time).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'}),r.line,r.mode==='inference'?'실제 추론':r.mode==='fixture'?'가상 · 시연':r.mode||'미실행',r.frame_count.toLocaleString()+'장',r.class||'—',boxes||'없음',labels[r.status]||r.status])tr.append(textNode('td',v));
   const cell=document.createElement('td'),button=textNode('button','보기');button.onclick=()=>{const {observations,...summary}=r;$('detailText').textContent=JSON.stringify({...summary,detail_note:'사진별 기록은 아래 최대 100건을 표시합니다. 전체는 사진별 CSV로 다운로드하세요.',observations:observations.slice(0,100)},null,2);$('detailCsv').onclick=()=>downloadCsv(observations,false);$('details').showModal();};cell.append(button);tr.append(cell);$('rows').append(tr);
  }
  $('recordCount').textContent=`검사 기록 · 총 ${rows.length.toLocaleString()}건`;$('recordRange').textContent=rows.length?`${(page*pageSize+1).toLocaleString()}–${Math.min((page+1)*pageSize,rows.length).toLocaleString()}번째 세션 표시 · 페이지당 ${pageSize}세션`:'표시할 기록이 없습니다.';$('empty').hidden=rows.length>0;$('page').textContent=`${page+1} / ${Math.max(1,Math.ceil(rows.length/pageSize))}`;$('previous').disabled=page===0;$('next').disabled=(page+1)*pageSize>=rows.length;
+ const mockCount=rows.filter(r=>r.mode==='fixture').length,realCount=rows.filter(r=>r.mode==='inference').length;$('demoNotice').hidden=mockCount===0;$('demoNotice').textContent=`가상 시연 ${mockCount.toLocaleString()}세션 포함 · 실제 검사 ${realCount.toLocaleString()}세션. 실제 기록만 보려면 ‘가상·시연 데이터 포함’을 해제하세요.`;
  $('message').textContent=`선택 기간 · 검사 세션 ${rows.length.toLocaleString()}건 · 세션당 기록 1건${limited?' · 원본 20,000건 조회 제한: 전체 세션 판정을 위해 기간을 좁혀 주세요.':''}`;
 }
 async function refresh(){
